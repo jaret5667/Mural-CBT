@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Línea de Tiempo Circular — Interactiva</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1: #fff8fb;
+      --bg2: #f3fff9;
+      --accent-pink: #ffcad4;
+      --accent-mint: #c8f3e6;
+      --accent-sky: #d9f0ff;
+      --accent-lav: #e9ddff;
+      --accent-peach: #ffe0cc;
+      --beige: #f7efe6;
+      --text: #2b2b2b;
+      --muted: #6b6b6b;
+      --glass: rgba(255,255,255,0.6);
+      --glass-2: rgba(255,255,255,0.8);
+      --shadow: 0 8px 30px rgba(43,43,43,0.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; color:var(--text)}
+    body{
+      background: radial-gradient(circle at 10% 20%, var(--bg1), var(--beige) 40%, var(--bg2) 100%);
+      display:flex;align-items:center;justify-content:flex-start;padding:20px;gap:24px;min-height:100vh;
+    }
+    .container{display:flex;gap:24px;width:100%;max-width:1200px;margin:auto;align-items:center;flex-wrap:wrap}
+    .wheel-wrap{flex:0 0 300px; position:relative;}
+    .wheel{
+      width:300px;height:300px;border-radius:50%;position:relative;overflow:visible;
+      background: conic-gradient(from 180deg, var(--accent-mint), var(--accent-sky), var(--accent-lav), var(--accent-peach), var(--accent-pink));
+      box-shadow: var(--shadow);transform-origin:50% 50%;
+      display:grid;place-items:center;padding:24px;
+    }
+    .wheel::after{
+      content:'';position:absolute;inset:50px;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));backdrop-filter: blur(6px);box-shadow:inset 0 4px 18px rgba(0,0,0,0.04);
+    }
+    .hub{position:relative;z-index:3;width:110px;height:110px;border-radius:50%;background:var(--glass-2);display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 6px 24px rgba(0,0,0,0.06);text-align:center}
+    .hub h3{margin:0;font-weight:600;font-size:16px}
+    .hub p{margin:4px 0 0;font-size:11px;color:var(--muted)}
+    .nodes{position:absolute;inset:0;pointer-events:none}
+    .node{position:absolute;left:50%;top:50%;transform-origin: -130px center; --r:130px; pointer-events:auto;}
+    .node button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,0.6);box-shadow:0 4px 14px rgba(0,0,0,0.06);backdrop-filter: blur(4px);transition:transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .18s;font-size:12px;}
+    .node button .dot{width:14px;height:14px;border-radius:50%;flex:0 0 14px;display:inline-grid;place-items:center;font-size:10px}
+    .node button .label{font-size:11px;font-weight:600;color:var(--text)}
+    .node button:hover, .node button:focus{transform:translateY(-4px) scale(1.05)}
+    .node button.active{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 28px rgba(0,0,0,0.12)}
+
+    /* Distribución uniforme en círculo, dejando el centro libre */
+    .n1{transform:translate(-50%,-50%) rotate(0deg) translateX(var(--r)) rotate(0deg)}
+    .n2{transform:translate(-50%,-50%) rotate(60deg) translateX(var(--r)) rotate(-60deg)}
+    .n3{transform:translate(-50%,-50%) rotate(120deg) translateX(var(--r)) rotate(-120deg)}
+    .n4{transform:translate(-50%,-50%) rotate(180deg) translateX(var(--r)) rotate(-180deg)}
+    .n5{transform:translate(-50%,-50%) rotate(240deg) translateX(var(--r)) rotate(-240deg)}
+    .n6{transform:translate(-50%,-50%) rotate(300deg) translateX(var(--r)) rotate(-300deg)}
+
+    .dot.p1{background:var(--accent-pink)}
+    .dot.p2{background:var(--accent-mint)}
+    .dot.p3{background:var(--accent-sky)}
+    .dot.p4{background:var(--accent-lav)}
+    .dot.p5{background:var(--accent-peach)}
+    .dot.p6{background:var(--beige)}
+
+    .panel{flex:1;min-height:300px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75));border-radius:18px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+    .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .icon{width:48px;height:48px;border-radius:14px;background:var(--glass);display:grid;place-items:center;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+    .title{font-size:16px;font-weight:700}
+    .subtitle{font-size:11px;color:var(--muted)}
+    .content{flex:1;width:100%;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+    .card{flex:1;padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.45));box-shadow:0 6px 18px rgba(0,0,0,0.04);min-height:150px;overflow:auto;font-size:13px}
+    .fade-in{animation:fade .35s cubic-bezier(.2,.9,.3,1)}
+    @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    @media(max-width:880px){body{padding:16px}.container{flex-direction:column;align-items:center}.wheel-wrap{order:2}.panel{order:1;width:100%}.wheel{width:260px;height:260px}.hub{width:90px;height:90px}}
+    @media(max-width:520px){.wheel{width:220px;height:220px}.hub{width:70px;height:70px}.node button{padding:4px 6px;font-size:10px}.dot{width:12px;height:12px}}
+  </style>
+</head>
+<body>
+  <div class="container" role="application">
+    <div class="wheel-wrap">
+      <div class="wheel" id="wheel">
+        <div class="hub">
+          <h3>Línea de Tiempo</h3>
+          <p>Interactiva · Selecciona una fecha</p>
+        </div>
+        <div class="nodes">
+          <div class="node n1"><button data-id="d1"><span class="dot p1">🕊️</span><span class="label">2 oct</span></button></div>
+          <div class="node n2"><button data-id="d2"><span class="dot p2">📜</span><span class="label">4 oct</span></button></div>
+          <div class="node n3"><button data-id="d3"><span class="dot p3">🍽️</span><span class="label">16 oct</span></button></div>
+          <div class="node n4"><button data-id="d4"><span class="dot p4">🎗️</span><span class="label">19 oct</span></button></div>
+          <div class="node n5"><button data-id="d5"><span class="dot p5">🌐</span><span class="label">24 oct</span></button></div>
+          <div class="node n6"><button data-id="d6"><span class="dot p6">🎃</span><span class="label">31 oct</span></button></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="panel" id="panel">
+      <div class="meta">
+        <div class="icon" id="panelIcon">🕊️</div>
+        <div>
+          <div class="title" id="panelTitle">Selecciona una fecha</div>
+          <div class="subtitle" id="panelDate">Rueda interactiva — arte y educación</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="card fade-in" id="panelBody">
+          <p>Esta línea de tiempo circular está diseñada para aprender y explorar diversos eventos importantes de octubre. Selecciona una fecha para obtener información detallada.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const data={
+      d1:{date:'2 de octubre',title:'Día Internacional de la No Violencia',icon:'🕊️',body:'Se promueve la paz y la resolución pacífica de conflictos. Incluye actividades educativas, marchas, campañas de sensibilización y charlas sobre la empatía, la cooperación y el respeto mutuo a nivel local e internacional.'},
+      d2:{date:'4 de octubre de 1824',title:'Primera Constitución Federal de México',icon:'📜',body:'Estableció los derechos ciudadanos y la división de poderes en México, sentando las bases de un gobierno federal y libre. Fue clave para consolidar la soberanía y garantizar libertades fundamentales, marcando un hito histórico.'},
+      d3:{date:'16 de octubre',title:'Día Mundial de la Alimentación',icon:'🍽️',body:'Conciencia sobre el hambre y la malnutrición global. Se promueven la seguridad alimentaria, producción sostenible, hábitos saludables y educación nutricional. Se apoyan comunidades vulnerables y se fomentan programas internacionales de alimentos nutritivos.'},
+      d4:{date:'19 de octubre',title:'Día Internacional contra el Cáncer de Mama',icon:'🎗️',body:'Fomenta la prevención, detección temprana y tratamiento del cáncer de mama. Incluye campañas de concientización, educación sobre autoexploración, revisiones médicas, apoyo a pacientes y familias, y fortalecimiento de la investigación médica.'},
+      d5:{date:'24 de octubre',title:'Día de las Naciones Unidas',icon:'🌐',body:'Conmemora la fundación de la ONU y su trabajo en derechos humanos, cooperación internacional y desarrollo sostenible. Se realizan actividades educativas sobre protección ambiental, justicia global y resolución de conflictos, destacando la colaboración entre países.'},
+      d6:{date:'31 de octubre',title:'Inicio del Día de Muertos y Halloween',icon:'🎃',body:'Celebra la memoria de los antepasados y la identidad cultural. Incluye altares, ofrendas, disfraces y actividades creativas. Mezcla tradiciones ancestrales con festividades modernas, fomentando unión familiar, creatividad e interacción social cultural.'}
+    };
+
+    const panelTitle=document.getElementById('panelTitle');
+    const panelDate=document.getElementById('panelDate');
+    const panelBody=document.getElementById('panelBody');
+    const panelIcon=document.getElementById('panelIcon');
+    const buttons=Array.from(document.querySelectorAll('.node button'));
+
+    function setActive(id){
+      buttons.forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+      const info=data[id];
+      panelTitle.textContent=info.title;
+      panelDate.textContent=info.date;
+      panelIcon.textContent=info.icon;
+      panelBody.innerHTML=`<p>${info.body}</p>`;
+      panelBody.classList.remove('fade-in');
+      void panelBody.offsetWidth;
+      panelBody.classList.add('fade-in');
+    }
+
+    buttons.forEach(btn=>{
+      btn.addEventListener('click',()=>setActive(btn.dataset.id));
+      btn.addEventListener('touchstart',()=>setActive(btn.dataset.id));
+    });
+  </script>
+</body>
+</html>
