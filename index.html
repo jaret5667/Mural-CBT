@@ -42,20 +42,21 @@
     .hub h3{margin:0;font-weight:600;font-size:16px}
     .hub p{margin:4px 0 0;font-size:11px;color:var(--muted)}
     .nodes{position:absolute;inset:0;pointer-events:none}
-    .node{position:absolute;left:50%;top:50%;transform-origin: -130px center; --r:130px; pointer-events:auto;}
+    .node{position:absolute;left:50%;top:50%;transform-origin:-130px center;--r:130px;pointer-events:auto;}
     .node button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,0.6);box-shadow:0 4px 14px rgba(0,0,0,0.06);backdrop-filter: blur(4px);transition:transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .18s;font-size:12px;}
     .node button .dot{width:14px;height:14px;border-radius:50%;flex:0 0 14px;display:inline-grid;place-items:center;font-size:10px}
     .node button .label{font-size:11px;font-weight:600;color:var(--text)}
     .node button:hover, .node button:focus{transform:translateY(-4px) scale(1.05)}
     .node button.active{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 28px rgba(0,0,0,0.12)}
 
-    /* Distribución uniforme en círculo, dejando el centro libre */
+    /* Distribución circular para 7 nodos */
     .n1{transform:translate(-50%,-50%) rotate(0deg) translateX(var(--r)) rotate(0deg)}
-    .n2{transform:translate(-50%,-50%) rotate(60deg) translateX(var(--r)) rotate(-60deg)}
-    .n3{transform:translate(-50%,-50%) rotate(120deg) translateX(var(--r)) rotate(-120deg)}
-    .n4{transform:translate(-50%,-50%) rotate(180deg) translateX(var(--r)) rotate(-180deg)}
-    .n5{transform:translate(-50%,-50%) rotate(240deg) translateX(var(--r)) rotate(-240deg)}
-    .n6{transform:translate(-50%,-50%) rotate(300deg) translateX(var(--r)) rotate(-300deg)}
+    .n2{transform:translate(-50%,-50%) rotate(51deg) translateX(var(--r)) rotate(-51deg)}
+    .n3{transform:translate(-50%,-50%) rotate(102deg) translateX(var(--r)) rotate(-102deg)}
+    .n4{transform:translate(-50%,-50%) rotate(153deg) translateX(var(--r)) rotate(-153deg)}
+    .n5{transform:translate(-50%,-50%) rotate(204deg) translateX(var(--r)) rotate(-204deg)}
+    .n6{transform:translate(-50%,-50%) rotate(255deg) translateX(var(--r)) rotate(-255deg)}
+    .n7{transform:translate(-50%,-50%) rotate(306deg) translateX(var(--r)) rotate(-306deg)}
 
     .dot.p1{background:var(--accent-pink)}
     .dot.p2{background:var(--accent-mint)}
@@ -63,6 +64,7 @@
     .dot.p4{background:var(--accent-lav)}
     .dot.p5{background:var(--accent-peach)}
     .dot.p6{background:var(--beige)}
+    .dot.p7{background:var(--accent-lav)}
 
     .panel{flex:1;min-height:300px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75));border-radius:18px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:flex-start;gap:14px}
     .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -83,15 +85,16 @@
       <div class="wheel" id="wheel">
         <div class="hub">
           <h3>Línea de Tiempo</h3>
-          <p>Interactiva · Selecciona una fecha</p>
+          <p>Interactiva · Octubre</p>
         </div>
         <div class="nodes">
           <div class="node n1"><button data-id="d1"><span class="dot p1">🕊️</span><span class="label">2 oct</span></button></div>
           <div class="node n2"><button data-id="d2"><span class="dot p2">📜</span><span class="label">4 oct</span></button></div>
-          <div class="node n3"><button data-id="d3"><span class="dot p3">🍽️</span><span class="label">16 oct</span></button></div>
-          <div class="node n4"><button data-id="d4"><span class="dot p4">🎗️</span><span class="label">19 oct</span></button></div>
-          <div class="node n5"><button data-id="d5"><span class="dot p5">🌐</span><span class="label">24 oct</span></button></div>
-          <div class="node n6"><button data-id="d6"><span class="dot p6">🎃</span><span class="label">31 oct</span></button></div>
+          <div class="node n3"><button data-id="d3"><span class="dot p3">🧠</span><span class="label">10 oct</span></button></div>
+          <div class="node n4"><button data-id="d4"><span class="dot p4">🍽️</span><span class="label">16 oct</span></button></div>
+          <div class="node n5"><button data-id="d5"><span class="dot p5">🎗️</span><span class="label">19 oct</span></button></div>
+          <div class="node n6"><button data-id="d6"><span class="dot p6">🌐</span><span class="label">24 oct</span></button></div>
+          <div class="node n7"><button data-id="d7"><span class="dot p7">🎃</span><span class="label">31 oct</span></button></div>
         </div>
       </div>
     </div>
@@ -106,20 +109,21 @@
       </div>
       <div class="content">
         <div class="card fade-in" id="panelBody">
-          <p>Esta línea de tiempo circular está diseñada para aprender y explorar diversos eventos importantes de octubre. Selecciona una fecha para obtener información detallada.</p>
+          <p>Explora los eventos importantes de octubre tocando o haciendo clic en cada fecha de la rueda. Aprende sobre historia, salud, cultura y más.</p>
         </div>
       </div>
     </section>
   </div>
 
   <script>
-    const data={
-      d1:{date:'2 de octubre',title:'Día Internacional de la No Violencia',icon:'🕊️',body:'Se promueve la paz y la resolución pacífica de conflictos. Incluye actividades educativas, marchas, campañas de sensibilización y charlas sobre la empatía, la cooperación y el respeto mutuo a nivel local e internacional.'},
-      d2:{date:'4 de octubre de 1824',title:'Primera Constitución Federal de México',icon:'📜',body:'Estableció los derechos ciudadanos y la división de poderes en México, sentando las bases de un gobierno federal y libre. Fue clave para consolidar la soberanía y garantizar libertades fundamentales, marcando un hito histórico.'},
-      d3:{date:'16 de octubre',title:'Día Mundial de la Alimentación',icon:'🍽️',body:'Conciencia sobre el hambre y la malnutrición global. Se promueven la seguridad alimentaria, producción sostenible, hábitos saludables y educación nutricional. Se apoyan comunidades vulnerables y se fomentan programas internacionales de alimentos nutritivos.'},
-      d4:{date:'19 de octubre',title:'Día Internacional contra el Cáncer de Mama',icon:'🎗️',body:'Fomenta la prevención, detección temprana y tratamiento del cáncer de mama. Incluye campañas de concientización, educación sobre autoexploración, revisiones médicas, apoyo a pacientes y familias, y fortalecimiento de la investigación médica.'},
-      d5:{date:'24 de octubre',title:'Día de las Naciones Unidas',icon:'🌐',body:'Conmemora la fundación de la ONU y su trabajo en derechos humanos, cooperación internacional y desarrollo sostenible. Se realizan actividades educativas sobre protección ambiental, justicia global y resolución de conflictos, destacando la colaboración entre países.'},
-      d6:{date:'31 de octubre',title:'Inicio del Día de Muertos y Halloween',icon:'🎃',body:'Celebra la memoria de los antepasados y la identidad cultural. Incluye altares, ofrendas, disfraces y actividades creativas. Mezcla tradiciones ancestrales con festividades modernas, fomentando unión familiar, creatividad e interacción social cultural.'}
+    const data = {
+      d1:{date:'2 de octubre',title:'Día Internacional de la No Violencia',icon:'🕊️',body:'Se promueve la paz, la tolerancia y el respeto mediante la educación y la cooperación. Un recordatorio de que la empatía y el diálogo son más poderosos que la violencia.'},
+      d2:{date:'4 de octubre de 1824',title:'Primera Constitución Federal de México',icon:'📜',body:'Estableció los derechos ciudadanos, la soberanía nacional y la división de poderes. Fue el inicio de una era de libertad y justicia en la historia mexicana.'},
+      d3:{date:'10 de octubre',title:'Día Mundial de la Salud Mental',icon:'🧠',body:'La salud mental es un derecho universal. Se fomenta la empatía, el bienestar emocional y el acceso a la atención psicológica para todos, promoviendo comunidades más solidarias y conscientes.'},
+      d4:{date:'16 de octubre',title:'Día Mundial de la Alimentación',icon:'🍽️',body:'La comida es un derecho, no un privilegio. Este día busca erradicar el hambre, reducir el desperdicio de alimentos y promover una nutrición sostenible y accesible para todos.'},
+      d5:{date:'19 de octubre',title:'Día Internacional contra el Cáncer de Mama',icon:'🎗️',body:'Un día para crear conciencia sobre la prevención y detección temprana. Se impulsa el apoyo a pacientes, la investigación y el amor propio como herramientas de esperanza.'},
+      d6:{date:'24 de octubre',title:'Día de las Naciones Unidas',icon:'🌐',body:'Se celebra la cooperación internacional y la búsqueda de la paz mundial. La ONU trabaja por el desarrollo sostenible, los derechos humanos y la solidaridad entre naciones.'},
+      d7:{date:'31 de octubre',title:'Inicio del Día de Muertos y Halloween',icon:'🎃',body:'Entre culturas, tradición y diversión. Celebramos la vida y la memoria de quienes amamos, mezclando lo ancestral con lo moderno en una fiesta de color y significado.'}
     };
 
     const panelTitle=document.getElementById('panelTitle');
